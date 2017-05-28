@@ -41,8 +41,8 @@ function Ball(x, y) {
         }
     }
 
-    this.collidesWith = function(x, y) {
-        return x <= (this.x + this.r) && y <= (this.y + this.r)
+    this.collidesWith = function(x, y, r) {
+        return ((x - this.x) * (x - this.x) + (this.y - y) * (this.y - y) <= (this.r + r) * (this.r + r))
     }
 
     this.updateUnits = function() {
@@ -76,6 +76,7 @@ function Engine() {
     }
 
     this.tick = function() {
+        this.detectCollisions();
         this.drawCanvas();
 
         for (var i = 0; i < this.balls.length; ++i)
@@ -89,8 +90,11 @@ function Engine() {
     }
 
     this.detectCollisions = function() {
-        for (var i = 0; i < balls.length; ++i) {
-
+        for (var i = 0; i < this.balls.length; ++i) {
+            for (var j = i + 1; j < this.balls.length; ++j) {
+                if (this.balls[i].collidesWith(this.balls[j].x, this.balls[j].y, this.balls[j].r))
+                    console.log('COLLISON')
+            }
         }
     }
 
@@ -114,7 +118,7 @@ function Engine() {
     }
 
     this.theCanvas.addEventListener('mousedown', function (event) {
-        if (_self.cue.collidesWith(event.x, event.y))
+        if (_self.cue.collidesWith(event.x, event.y, 25))
             _self.shooting = true;
     });
 
@@ -131,7 +135,7 @@ function Engine() {
         }
     });
     this.theCanvas.addEventListener('touchstart', function (event) {
-        if (_self.cue.collidesWith(event.touches[0].pageX, event.touches[0].pageY))
+        if (!_self.cue.collidesWith(event.touches[0].pageX, event.touches[0].pageY))
             _self.shooting = true;
     });
     this.theCanvas.addEventListener('touchmove', function (event) {
