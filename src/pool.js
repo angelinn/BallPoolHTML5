@@ -1,6 +1,8 @@
 (function() {
   var shooting = false;
   var shot = false;
+  var lastMove = null;
+  
    function  drawScreen () {  // правоъгълното поле
       context.fillStyle = '#6fa';
       context.fillRect(0, 0, theCanvas.width, theCanvas.height);
@@ -42,30 +44,42 @@
    var radians = 0;
    var xunits = 0;
    var yunits = 0;
-   var ball = {x: theCanvas.width / 2, y: theCanvas.height / 2, r:  17};
+   var ball = {x: theCanvas.width / 2, y: theCanvas.height / 2, r:  25};
    updateBall();
 
-   function startMovement(event) {
+   setInterval(drawScreen, 3);
+	theCanvas.addEventListener('mouseup', function (event) {
 if (event.x <= (ball.x + ball.r) && event.y <= (ball.y + ball.r))
 	 shooting = true;
-   }
-
-   function stopMovement(event) {
-    console.log(event)
-if (shooting){
-			var diffX = event.x - ball.x;
-			var diffY = event.y - ball.y;
+    });
+	theCanvas.addEventListener('mousedown', function (event) {
+    if (shooting){
+        var diffX = event.x - ball.x;
+        var diffY = event.y - ball.y;
 
         var rad = Math.atan2(diffY, diffX)
         ball.angle = rad;
         shooting = false
         shot = true
-		}
-   }
+	    }
+    });	
+    theCanvas.addEventListener('touchstart', function (event) {
+if (event.touches[0].pageX <= (ball.x + ball.r) && event.touches[0].pageY <= (ball.y + ball.r))
+	 shooting = true;
+    });
+    theCanvas.addEventListener('touchmove', function (event) {
+        lastMove = event;
+    });
+	theCanvas.addEventListener('touchend', function (event) {
+        console.log(lastMove)
+            if (shooting){
+        var diffX = lastMove.touches[0].pageX - ball.x;
+        var diffY = lastMove.touches[0].pageY - ball.y;
 
-   setInterval(drawScreen, 3);
-	theCanvas.addEventListener('mousedown', startMovement);
-	theCanvas.addEventListener('mouseup', stopMovement);	
-    theCanvas.addEventListener('touchstart', startMovement);
-	theCanvas.addEventListener('touchend', stopMovement);
+        var rad = Math.atan2(diffY, diffX)
+        ball.angle = rad;
+        shooting = false
+        shot = true
+	    }
+    });
 })();
