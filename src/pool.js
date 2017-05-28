@@ -1,41 +1,45 @@
 var CANVAS_WIDTH;
 var CANVAS_HEIGHT;
-var shot = false;
+var CUE_SPEED = 2;
+var BALL_SPEED = 1;
 
-function Ball(x, y) {
+function Ball(x, y, speed) {
     this.x = x;
     this.y = y;
 
     this.r = 25;
-    this.speed = 1;
+    this.speed = speed;
+    this.defaultSpeed = speed;
     this.xunits = 0;
     this.yunits = 0;
+    this.moving = false;
 
     this.advance = function () {
         this.x += this.xunits;
         this.y += this.yunits;
     }
 
-    this.updateCue = function() {
-        this.update();
-        if (shot) {
+    this.update = function () {
+        if (this.moving) {
             this.updateUnits()
 
-            if (this.speed > 0)
-                this.speed -= 0.001
-            else {
-                shot = false;
-                this.speed = 1
+            this.speed -= 0.002
+            if (this.speed <= 0) {
+                this.moving = false;
+                this.speed = this.defaultSpeed;
             }
         }
-    }
-
-    this.update = function () {
         if (this.x > CANVAS_WIDTH - 75 || this.x < 75) {
+            this.speed -= 0.05;
+            console.log('wall collision')
+            console.log(this.speed)
             this.angle = 180 - this.angle;
             this.updateUnits()
         }
         else if (this.y > CANVAS_HEIGHT - 75 || this.y < 75) {
+            this.speed -= 0.05;
+            console.log('wall collision')
+            console.log(this.speed)
             this.angle = 360 - this.angle;
             this.updateUnits()
         }
@@ -63,13 +67,17 @@ function Engine() {
 
     this.context = this.theCanvas.getContext("2d");
     this.shooting = false;
-    //this.shot = false;
     this.lastMove = null;
-    this.cue = new Ball(this.theCanvas.width / 2, this.theCanvas.height / 2);
-    this.balls = [this.cue, new Ball(this.theCanvas.width / 4, this.theCanvas.height / 4)]
+    this.cue = new Ball(this.theCanvas.width / 2, this.theCanvas.height / 2, 2);
+    this.balls = [this.cue,
+        new Ball(this.theCanvas.width / 4, this.theCanvas.height / 4, 1),
+        new Ball(this.theCanvas.width / 3, this.theCanvas.height / 3, 1),
+        new Ball(this.theCanvas.width / 5, this.theCanvas.height / 7, 1),
+        new Ball(250, 250, 1),
+        new Ball(800, 900, 1)]
 
     this.drawCanvas = function() {
-        this.context.fillStyle = '#6fa';
+        this.context.fillStyle = '#0A6C03';
         this.context.fillRect(0, 0, this.theCanvas.width, this.theCanvas.height);
         
         this.context.strokeStyle = '#663300';
@@ -86,8 +94,7 @@ function Engine() {
 
         this.drawBalls();
 
-        this.cue.updateCue();
-        for (var i = 1; i < this.balls.length; ++i)
+        for (var i = 0; i < this.balls.length; ++i)
             this.balls[i].update();
     }
 
@@ -117,8 +124,10 @@ function Engine() {
         var otherrad = Math.atan2(othery, otherx);
         other.angle = otherrad * (180 / Math.PI)
 
-        one.updateUnits()
-        other.updateUnits()
+            one.speed -= 0.05;
+        other.speed -= 0.05;
+        one.moving = true
+        other.moving = true
     }
 
     this.drawBalls = function() {
@@ -131,13 +140,15 @@ function Engine() {
         this.context.fill();
 
         this.context.fillStyle = "#F00"
-        this.context.beginPath();
 
-        for (var i = 1; i < this.balls.length; ++i)
+        for (var i = 1; i < this.balls.length; ++i) {
+        this.context.beginPath();
             this.context.arc(this.balls[i].x, this.balls[i].y, 30, 0, Math.PI * 2, true);
-            
-        this.context.closePath();
+                    this.context.closePath();
         this.context.fill();
+        }
+            
+
     }
 
     this.theCanvas.addEventListener('mousedown', function (event) {
@@ -154,7 +165,7 @@ function Engine() {
 
             _self.cue.angle = rad * (180 / Math.PI)
             _self.shooting = false
-            shot = true
+            _self.cue.moving = true
         }
     });
     this.theCanvas.addEventListener('touchstart', function (event) {
@@ -174,7 +185,7 @@ function Engine() {
             var rad = Math.atan2(diffY, diffX)
             _self.cue.angle = rad * (180 / Math.PI)
             _self.shooting = false
-            shot = true
+            _self.cue.moving = true
         }
     });
 }
