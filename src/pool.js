@@ -1,3 +1,7 @@
+var CANVAS_WIDTH;
+var CANVAS_HEIGHT;
+var shot = false;
+
 function Ball(x, y) {
     this.x = x;
     this.y = y;
@@ -27,11 +31,11 @@ function Ball(x, y) {
     }
 
     this.update = function () {
-        if (this.x > theCanvas.width - 20 || this.x < 20) {
+        if (this.x > CANVAS_WIDTH || this.x < 20) {
             this.angle = 180 - this.angle;
             this.updateUnits()
         }
-        else if (this.y > theCanvas.height - 20 || this.y < 20) {
+        else if (this.y > CANVAS_HEIGHT - 20 || this.y < 20) {
             this.angle = 360 - this.angle;
             this.updateUnits()
         }
@@ -47,92 +51,108 @@ function Ball(x, y) {
     }
 }
 
-var theCanvas = document.getElementById("canvas");
-var context = theCanvas.getContext("2d");
-var shooting = false;
-var shot = false;
-var lastMove = null;
-var cue = new Ball(theCanvas.width / 2, theCanvas.height / 2);
-
-var balls = [cue, new Ball(theCanvas.width / 4, theCanvas.height / 4)]
-
-theCanvas.addEventListener('mousedown', function (event) {
-    if (cue.collidesWith(event.x, event.y))
-        shooting = true;
-});
-
-theCanvas.addEventListener('mouseup', function (event) {
-    if (shooting) {
-        var diffX = event.x - cue.x;
-        var diffY = event.y - cue.y;
-
-        var rad = Math.atan2(diffY, diffX)
-
-        cue.angle = rad * (180 / Math.PI)
-        shooting = false
-        shot = true
-    }
-});
-theCanvas.addEventListener('touchstart', function (event) {
-    if (cue.collidesWith(event.touches[0].pageX, event.touches[0].pageY))
-        shooting = true;
-});
-theCanvas.addEventListener('touchmove', function (event) {
-    lastMove = event;
-});
-theCanvas.addEventListener('touchend', function (event) {
-    if (shooting) {
-        var diffX = lastMove.touches[0].pageX - cue.x;
-        var diffY = lastMove.touches[0].pageY - cue.y;
-
-        var rad = Math.atan2(diffY, diffX)
-        cue.angle = rad * (180 / Math.PI)
-        shooting = false
-        shot = true
-    }
-});
-
-function drawCanvas() {
-    context.fillStyle = '#6fa';
-    context.fillRect(0, 0, theCanvas.width, theCanvas.height);
+function Engine() {
+    var _self = this;
     
-    context.strokeStyle = '#663300';
-    context.lineWidth = 15;
-    context.strokeRect(1, 1, theCanvas.width - 2, theCanvas.height - 2);
-}
+    this.theCanvas = document.getElementById("canvas");
 
-function drawBalls() {
-    context.fillStyle = "#FFF";
-    context.beginPath();
+    CANVAS_HEIGHT = this.theCanvas.height;
+    CANVAS_WIDTH = this.theCanvas.width;
 
-    context.arc(cue.x, cue.y, 17, 0, Math.PI * 2, true); //радиус на топчето
+    this.context = this.theCanvas.getContext("2d");
+    this.shooting = false;
+    //this.shot = false;
+    this.lastMove = null;
+    this.cue = new Ball(this.theCanvas.width / 2, this.theCanvas.height / 2);
+    this.balls = [this.cue, new Ball(this.theCanvas.width / 4, this.theCanvas.height / 4)]
 
-    context.closePath();
-    context.fill();
-
-    context.fillStyle = "#F00"
-    context.beginPath();
-
-    for (var i = 1; i < balls.length; ++i)
-        context.arc(balls[i].x, balls[i].y, 17, 0, Math.PI * 2, true);
+    this.drawCanvas = function() {
+        this.context.fillStyle = '#6fa';
+        this.context.fillRect(0, 0, this.theCanvas.width, this.theCanvas.height);
         
-    context.closePath();
-    context.fill();
+        this.context.strokeStyle = '#663300';
+        this.context.lineWidth = 15;
+        this.context.strokeRect(1, 1, this.theCanvas.width - 2, this.theCanvas.height - 2);
+    }
+
+    this.tick = function() {
+        this.drawCanvas();
+
+        for (var i = 0; i < this.balls.length; ++i)
+            this.balls[i].advance();
+
+        this.drawBalls();
+
+        this.cue.updateCue();
+        for (var i = 1; i < this.balls.length; ++i)
+            this.balls[i].update();
+    }
+
+    this.detectCollisions = function() {
+        for (var i = 0; i < balls.length; ++i) {
+
+        }
+    }
+
+    this.drawBalls = function() {
+        this.context.fillStyle = "#FFF";
+        this.context.beginPath();
+
+        this.context.arc(this.cue.x, this.cue.y, 17, 0, Math.PI * 2, true); //радиус на топчето
+
+        this.context.closePath();
+        this.context.fill();
+
+        this.context.fillStyle = "#F00"
+        this.context.beginPath();
+
+        for (var i = 1; i < this.balls.length; ++i)
+            this.context.arc(this.balls[i].x, this.balls[i].y, 17, 0, Math.PI * 2, true);
+            
+        this.context.closePath();
+        this.context.fill();
+    }
+
+    this.theCanvas.addEventListener('mousedown', function (event) {
+        if (_self.cue.collidesWith(event.x, event.y))
+            _self.shooting = true;
+    });
+
+    this.theCanvas.addEventListener('mouseup', function (event) {
+        if (_self.shooting) {
+            var diffX = event.x - _self.cue.x;
+            var diffY = event.y - _self.cue.y;
+
+            var rad = Math.atan2(diffY, diffX)
+
+            _self.cue.angle = rad * (180 / Math.PI)
+            _self.shooting = false
+            shot = true
+        }
+    });
+    this.theCanvas.addEventListener('touchstart', function (event) {
+        if (_self.cue.collidesWith(event.touches[0].pageX, event.touches[0].pageY))
+            _self.shooting = true;
+    });
+    this.theCanvas.addEventListener('touchmove', function (event) {
+        _self.lastMove = event;
+    });
+    this.theCanvas.addEventListener('touchend', function (event) {
+        if (_self.shooting) {
+            var diffX = lastMove.touches[0].pageX - _self.cue.x;
+            var diffY = lastMove.touches[0].pageY - _self.cue.y;
+
+            var rad = Math.atan2(diffY, diffX)
+            _self.cue.angle = rad * (180 / Math.PI)
+            _self.shooting = false
+            shot = true
+        }
+    });
 }
-
-function drawScreen() {  // правоъгълното поле
-    drawCanvas();
-
-    for (var i = 0; i < balls.length; ++i)
-        balls[i].advance();
-
-    drawBalls();
-
-    cue.updateCue();
-    for (var i = 1; i < balls.length; ++i)
-        balls[i].update();
-}
-
 (function () {
-    setInterval(drawScreen, 3);
+    var engine = new Engine();
+    
+    setInterval(function() {
+        engine.tick()
+    }, 3);
 })();
