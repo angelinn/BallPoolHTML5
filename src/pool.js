@@ -31,7 +31,7 @@ function Ball(x, y) {
     }
 
     this.update = function () {
-        if (this.x > CANVAS_WIDTH || this.x < 20) {
+        if (this.x > CANVAS_WIDTH - 20 || this.x < 20) {
             this.angle = 180 - this.angle;
             this.updateUnits()
         }
