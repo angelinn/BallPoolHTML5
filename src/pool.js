@@ -21,23 +21,30 @@ function Ball(x, y, speed) {
         if (this.moving) {
             this.updateUnits()
 
-            this.speed -= 0.002
-            if (this.speed <= 0) {
+            this.lowerSpeed(0.002)
+            if (this.speed <= 0.1) {
                 this.moving = false;
+                this.speed = 0
+                this.updateUnits()
+
                 this.speed = this.defaultSpeed;
             }
         }
         if (this.x > CANVAS_WIDTH - 75 || this.x < 75) {
-            this.speed -= 0.05;
+            this.lowerSpeed(0.05)
+
             console.log('wall collision')
             console.log(this.speed)
+
             this.angle = 180 - this.angle;
             this.updateUnits()
         }
         else if (this.y > CANVAS_HEIGHT - 75 || this.y < 75) {
-            this.speed -= 0.05;
+            this.lowerSpeed(0.05)
+
             console.log('wall collision')
             console.log(this.speed)
+
             this.angle = 360 - this.angle;
             this.updateUnits()
         }
@@ -50,6 +57,13 @@ function Ball(x, y, speed) {
     this.updateUnits = function() {
         this.xunits = Math.cos(this.angle * (Math.PI / 180)) * this.speed;
         this.yunits = Math.sin(this.angle * (Math.PI / 180)) * this.speed;
+    }
+
+    this.lowerSpeed = function(lower) {
+        if (this.speed - lower > 0)
+            this.speed -= lower;
+        else
+            this.speed = 0
     }
 }
 
@@ -79,9 +93,6 @@ function Engine() {
 
         this.balls.push(new Ball(randomWidth, randomHeight, 1));
     }
-
-    console.log(this.balls)
-
 
     this.drawCanvas = function() {
         this.context.fillStyle = '#0A6C03';
@@ -113,30 +124,27 @@ function Engine() {
         this.context.fill()
         
         if (CANVAS_HEIGHT < CANVAS_WIDTH) {
-        this.context.beginPath();
-        this.context.arc(this.theCanvas.width / 2, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
+            this.context.beginPath();
+            this.context.arc(this.theCanvas.width / 2, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
+            this.context.closePath()
+            this.context.fill()
 
-        this.context.beginPath();
-        this.context.arc(this.theCanvas.width / 2, 50, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
+            this.context.beginPath();
+            this.context.arc(this.theCanvas.width / 2, 50, 30, 10, Math.PI / 2, true)
+            this.context.closePath()
+            this.context.fill()
         }
         else {
-        this.context.beginPath();
-        this.context.arc(this.theCanvas.width - 50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
+            this.context.beginPath();
+            this.context.arc(this.theCanvas.width - 50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
+            this.context.closePath()
+            this.context.fill()
 
-        this.context.beginPath();
-        this.context.arc(50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
+            this.context.beginPath();
+            this.context.arc(50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
+            this.context.closePath()
+            this.context.fill()
         }
-        
-
-        
     }
 
     this.tick = function() {
@@ -178,8 +186,11 @@ function Engine() {
         var otherrad = Math.atan2(othery, otherx);
         other.angle = otherrad * (180 / Math.PI)
 
+        if (one.speed > 0)
             one.speed -= 0.05;
-        other.speed -= 0.05;
+
+        if (other.speed > 0)
+            other.speed -= 0.05;
         one.moving = true
         other.moving = true
     }
