@@ -72,9 +72,9 @@ function Engine() {
     this.balls = [this.cue,
         new Ball(this.theCanvas.width / 4, this.theCanvas.height / 4, 1),
         new Ball(this.theCanvas.width / 3, this.theCanvas.height / 3, 1),
-        new Ball(this.theCanvas.width / 5, this.theCanvas.height / 7, 1),
-        new Ball(250, 250, 1),
-        new Ball(800, 900, 1)]
+        new Ball(this.theCanvas.width / 5, 500, 1),
+        new Ball(1100, 200, 1),
+        new Ball(900, 400, 1)]
 
     this.drawCanvas = function() {
         this.context.fillStyle = '#0A6C03';
@@ -83,6 +83,56 @@ function Engine() {
         this.context.strokeStyle = '#663300';
         this.context.lineWidth = 100;
         this.context.strokeRect(1, 1, this.theCanvas.width - 2, this.theCanvas.height - 2);
+
+        this.context.fillStyle = "#000000"
+        this.context.beginPath();
+        this.context.arc(50, 50, 30, 0, Math.PI / 2, true);
+        this.context.closePath()
+        this.context.fill()
+
+        this.context.beginPath();
+        this.context.arc(50, this.theCanvas.height - 50, 30, 0, 30 + Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+
+        this.context.beginPath();
+        this.context.arc(this.theCanvas.width - 50, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+
+        this.context.beginPath();
+        this.context.arc(this.theCanvas.width - 50, 50, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+
+        var longerSide;
+        var shorterSide;
+        
+        if (CANVAS_HEIGHT < CANVAS_WIDTH) {
+this.context.beginPath();
+        this.context.arc(this.theCanvas.width / 2, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+
+        this.context.beginPath();
+        this.context.arc(this.theCanvas.width / 2, 50, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+        }
+        else {
+this.context.beginPath();
+        this.context.arc(this.theCanvas.width - 50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+
+        this.context.beginPath();
+        this.context.arc(50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
+        this.context.closePath()
+        this.context.fill()
+        }
+        
+
+        
     }
 
     this.tick = function() {
