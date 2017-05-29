@@ -144,6 +144,13 @@ function Engine() {
                     this.handleCollision(this.balls[i], this.balls[j]);
                 }
             }
+
+            for (var h = 0; h < this.pockets.length; ++h) {
+                if (this.balls[i].collidesWith(this.pockets[h].x, this.pockets[h].y, this.balls[i].r)) {
+                    this.balls.splice(i)
+                    --i;
+                }
+            }
         }
     }
 
