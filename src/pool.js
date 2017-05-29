@@ -1,7 +1,5 @@
 var CANVAS_WIDTH;
 var CANVAS_HEIGHT;
-var CUE_SPEED = 2;
-var BALL_SPEED = 1;
 
 function Ball(x, y, speed) {
     this.x = x;
@@ -69,12 +67,21 @@ function Engine() {
     this.shooting = false;
     this.lastMove = null;
     this.cue = new Ball(this.theCanvas.width / 2, this.theCanvas.height / 2, 2);
-    this.balls = [this.cue,
-        new Ball(this.theCanvas.width / 4, this.theCanvas.height / 4, 1),
-        new Ball(this.theCanvas.width / 3, this.theCanvas.height / 3, 1),
-        new Ball(this.theCanvas.width / 5, 500, 1),
-        new Ball(1100, 200, 1),
-        new Ball(900, 400, 1)]
+    this.balls = [this.cue]
+
+    var min = Math.ceil(150)
+    var maxHeight = Math.floor(window.innerHeight - 150)
+    var maxWidth = Math.floor(window.innerWidth - 150);
+
+    for (var i = 0; i < 5; ++i) {
+        console.log('done')
+        var randomWidth = Math.random() * (maxHeight - min) + min;
+        var randomHeight = Math.random() * (maxWidth - min) + min;
+        this.balls.push(new Ball(randomWidth, randomHeight, 1));
+    }
+
+    console.log(this.balls)
+
 
     this.drawCanvas = function() {
         this.context.fillStyle = '#0A6C03';
@@ -104,9 +111,6 @@ function Engine() {
         this.context.arc(this.theCanvas.width - 50, 50, 30, 10, Math.PI / 2, true)
         this.context.closePath()
         this.context.fill()
-
-        var longerSide;
-        var shorterSide;
         
         if (CANVAS_HEIGHT < CANVAS_WIDTH) {
 this.context.beginPath();
@@ -239,10 +243,34 @@ this.context.beginPath();
         }
     });
 }
-(function () {
-    var engine = new Engine();
-    
-    setInterval(function() {
-        engine.tick()
-    }, 3);
-})();
+
+var engine = new Engine();
+
+setInterval(function() {
+    engine.tick()
+}, 3);
+
+window.addEventListener('orientationchange', doOnOrientationChange);
+function doOnOrientationChange() {
+    for (var i = 0; i < engine.balls.length; ++i) {
+        var temp = engine.balls[i].y;
+        engine.balls[i].y = x;
+        engine.balls[i].x = temp;
+    }
+}
+
+function resizeCanvas() {
+    canvas = document.getElementById("canvas");
+    if (canvas.width < window.innerWidth) {
+    canvas.width  = window.innerWidth;
+
+    }
+
+    if (canvas.height < window.innerHeight) {
+    canvas.height = window.innerHeight;  
+
+    }    
+
+    CANVAS_HEIGHT = canvas.height;
+    CANVAS_WIDTH = canvas.width;      
+}
