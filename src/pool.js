@@ -74,9 +74,9 @@ function Engine() {
     var maxWidth = Math.floor(window.innerWidth - 150);
 
     for (var i = 0; i < 5; ++i) {
-        console.log('done')
-        var randomWidth = Math.random() * (maxHeight - min) + min;
-        var randomHeight = Math.random() * (maxWidth - min) + min;
+        var randomWidth = Math.random() * (maxWidth - min) + min;
+        var randomHeight = Math.random() * (maxHeight - min) + min;
+
         this.balls.push(new Ball(randomWidth, randomHeight, 1));
     }
 
@@ -113,7 +113,7 @@ function Engine() {
         this.context.fill()
         
         if (CANVAS_HEIGHT < CANVAS_WIDTH) {
-this.context.beginPath();
+        this.context.beginPath();
         this.context.arc(this.theCanvas.width / 2, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
         this.context.closePath()
         this.context.fill()
@@ -124,7 +124,7 @@ this.context.beginPath();
         this.context.fill()
         }
         else {
-this.context.beginPath();
+        this.context.beginPath();
         this.context.arc(this.theCanvas.width - 50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
         this.context.closePath()
         this.context.fill()
