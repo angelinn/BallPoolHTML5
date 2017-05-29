@@ -82,6 +82,8 @@ function Engine() {
     this.lastMove = null;
     this.cue = new Ball(this.theCanvas.width / 2, this.theCanvas.height / 2, 2);
     this.balls = [this.cue]
+    this.pockets = [new Ball(50, 50, 0), new Ball(50, CANVAS_HEIGHT - 50, 0), new Ball(CANVAS_WIDTH - 50, CANVAS_HEIGHT - 50, 0),
+                    new Ball(CANVAS_WIDTH - 50, 50, 0)]
 
     var min = Math.ceil(150)
     var maxHeight = Math.floor(window.innerHeight - 150)
@@ -103,45 +105,19 @@ function Engine() {
         this.context.strokeRect(1, 1, this.theCanvas.width - 2, this.theCanvas.height - 2);
 
         this.context.fillStyle = "#000000"
-        this.context.beginPath();
-        this.context.arc(50, 50, 30, 0, Math.PI / 2, true);
-        this.context.closePath()
-        this.context.fill()
-
-        this.context.beginPath();
-        this.context.arc(50, this.theCanvas.height - 50, 30, 0, 30 + Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
-
-        this.context.beginPath();
-        this.context.arc(this.theCanvas.width - 50, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
-
-        this.context.beginPath();
-        this.context.arc(this.theCanvas.width - 50, 50, 30, 10, Math.PI / 2, true)
-        this.context.closePath()
-        this.context.fill()
         
         if (CANVAS_HEIGHT < CANVAS_WIDTH) {
-            this.context.beginPath();
-            this.context.arc(this.theCanvas.width / 2, this.theCanvas.height - 50, 30, 10, Math.PI / 2, true)
-            this.context.closePath()
-            this.context.fill()
-
-            this.context.beginPath();
-            this.context.arc(this.theCanvas.width / 2, 50, 30, 10, Math.PI / 2, true)
-            this.context.closePath()
-            this.context.fill()
+            this.pockets.push(new Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT - 50, 0))
+            this.pockets.push(new Ball(CANVAS_WIDTH / 2, 50, 0))
         }
         else {
-            this.context.beginPath();
-            this.context.arc(this.theCanvas.width - 50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
-            this.context.closePath()
-            this.context.fill()
+            this.pockets.push(new Ball(CANVAS_WIDTH - 50, CANVAS_HEIGHT / 2, 0))
+            this.pockets.push(new Ball(50, CANVAS_HEIGHT / 2, 0))
+        }
 
+        for (var i = 0; i < this.pockets.length; ++i) {
             this.context.beginPath();
-            this.context.arc(50, this.theCanvas.height / 2, 30, 10, Math.PI / 2, true)
+            this.context.arc(this.pockets[i].x, this.pockets[i].y, 30, 10, Math.PI / 2, true);
             this.context.closePath()
             this.context.fill()
         }
